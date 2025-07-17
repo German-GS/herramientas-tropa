@@ -1,0 +1,301 @@
+/* -----------------------------------------
+   Login.module.css - Versión mejorada:
+   · Mensajes de error/éxito fuera del container
+   · Usa --color-tropa (#04bc99) del design-tokens
+   · Contenedor más ancho y compacto
+   · Espacios reducidos entre elementos
+   · Tipografía de --font-base (Inter)
+----------------------------------------- */
+
+/* ---------- Estructura general ---------- */
+.loginPageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 52rem; /* Igual que el container */
+  padding: 1rem;
+}
+
+/* ---------- Mensajes de estado ---------- */
+.loginStatus {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.loginStatus .error,
+.loginStatus .msg {
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.loginStatus .error {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ffebee;
+  border-left: 4px solid #ff4444;
+}
+
+.loginStatus .msg {
+  background: rgba(0, 200, 81, 0.15);
+  color: #e8f5e9;
+  border-left: 4px solid #00c851;
+}
+
+/* ---------- Fondo página ---------- */
+:global(body) {
+  background: #ffffff url("../../img/PATRÓN-7.png") center / cover no-repeat
+    fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: var(--font-base, "Inter", sans-serif);
+}
+
+/* ---------- Contenedor principal (ancho y compacto) ---------- */
+.container {
+  background: var(--color-tropa, #04bc99);
+  width: 90%;
+  max-width: 52rem;
+  padding: 2.5rem 4rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #fff;
+  text-align: center;
+  position: relative; /* Para posicionar mensajes absolutos */
+}
+
+/* ---------- Mensajes de error/éxito ---------- */
+.loginMessages {
+  position: absolute;
+  top: -2.5rem; /* Posición fuera del contenedor pero visualmente conectada */
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: calc(100% - 8rem); /* Mismo ancho que el contenido interno */
+  z-index: 10;
+}
+
+.error,
+.msg {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error {
+  background: #d32f2f; /* Rojo sólido para mejor contraste */
+  color: white;
+}
+
+.msg {
+  background: #388e3c; /* Verde sólido para mejor contraste */
+  color: white;
+}
+
+/* ---------- Logos ---------- */
+.logo,
+.associationLogo {
+  width: 6rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+.logo {
+  margin-bottom: 1rem;
+}
+
+.associationLogo {
+  margin-top: 1rem;
+}
+
+/* ---------- Títulos y textos ---------- */
+.title {
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Formulario ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formLabel {
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.formInput:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+
+/* ---------- Botones ---------- */
+.submitBtn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #fff;
+  color: var(--color-tropa);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.submitBtn:hover {
+  transform: translateY(-1px);
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #4285f4;
+  border: none;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.googleBtn:hover {
+  transform: translateY(-1px);
+}
+
+.googleIcon {
+  font-size: 1.2rem;
+}
+
+.registerBtn {
+  margin-top: 0.75rem;
+  background: #fff;
+  color: var(--color-tropa, #04bc99);
+  border: 2px solid var(--color-tropa, #04bc99);
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  transition: background 0.18s, color 0.18s;
+  width: 100%;
+  cursor: pointer;
+}
+.registerBtn:hover {
+  transform: translateY(-1px);
+}
+
+/* ---------- Botón "Olvidaste contraseña" ---------- */
+.forgotBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.forgotBtn:hover {
+  color: #fff;
+}
+
+/* ---------- Divider ---------- */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.divider::before {
+  margin-right: 1rem;
+}
+
+.divider::after {
+  margin-left: 1rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginPageWrapper {
+    padding: 0.5rem;
+  }
+
+  .container {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .formInput {
+    padding: 0.8rem 1rem;
+  }
+
+  .loginStatus .error,
+  .loginStatus .msg {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+}

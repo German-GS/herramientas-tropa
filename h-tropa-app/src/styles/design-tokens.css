@@ -1,0 +1,17 @@
+/* src/styles/design-tokens.css */
+:root {
+  /* Paleta Tropa y áreas */
+  --color-tropa: #04bc99;
+  --color-sociabilidad: #ffd300;
+  --color-afectividad: #04bc99;
+  /* … demás variables … */
+
+  /* Tipografías */
+  --font-base: "Inter", sans-serif;
+  --font-mono: "Source Code Pro", monospace;
+
+  /* Espaciados */
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+}

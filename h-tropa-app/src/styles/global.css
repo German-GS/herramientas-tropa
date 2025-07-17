@@ -1,0 +1,49 @@
+/* src/styles/global.css */
+@import "./design-tokens.css";
+
+/* Reset mínimo */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-family: var(--font-base);
+  font-size: 16px;
+  background: #fafafa;
+  color: #222;
+}
+/* Patrón institucional en TODO el sitio */
+body::before {
+  content: "";
+  position: fixed; /* cubre toda la ventana y se queda “pegado” */
+  inset: 0;
+  background: #ffffff url("../img/PATRÓN-7.png") center / cover no-repeat fixed;
+  z-index: -1; /* detrás de todo */
+  pointer-events: none; /* que no bloquee clics */
+}
+
+/* aseguramos que el body no tenga color sólido */
+body {
+  background: transparent;
+}
+
+a {
+  color: var(--color-tropa);
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+/* Clases utilitarias */
+.mt-md {
+  margin-top: var(--space-md);
+}
+.p-lg {
+  padding: var(--space-lg);
+}
+.text-center {
+  text-align: center;
+}
+/* … puedes añadir más según necesidades … */
