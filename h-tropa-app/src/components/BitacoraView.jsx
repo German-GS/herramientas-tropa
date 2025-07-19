@@ -1,36 +1,136 @@
 // src/components/BitacoraView.jsx
-import React, { useState, useMemo } from "react";
-import styles from "../styles/components/ProtagonistaDashboard.module.css";
-import { bitacoraData } from "../data/bitacoraData"; // Importamos los datos
-import PasoBitacora from "./PasoBitacora"; // Importamos el componente del paso
 
+import React, { useState, useMemo, useEffect } from "react";
+import styles from "../styles/components/ProtagonistaDashboard.module.css";
+import { bitacoraData } from "../data/bitacoraData";
+import PasoBitacora from "./PasoBitacora";
+
+// -> Importaciones adicionales para consultar en Firestore
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { useAuth } from "../contexts/AuthContext";
+import Swal from "sweetalert2";
+
+// -> 1. Lógica MEJORADA para determinar la bitácora por edad
 const getBitacoraPorEdad = (fechaNacimiento) => {
-  // Por ahora, simulamos que el usuario está en la etapa "Aventurero"
+  if (!fechaNacimiento) return "Aventurero"; // Valor por defecto
+
+  const hoy = new Date();
+  const nacimiento = new Date(fechaNacimiento);
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+
+  if (edad >= 14) return "Explorador";
+  if (edad >= 13) return "Pionero";
+  if (edad >= 12) return "Intrépido";
   return "Aventurero";
 };
 
 export default function BitacoraView() {
-  const bitacoraActual = getBitacoraPorEdad();
+  const { user } = useAuth();
 
-  // Estado para guardar el progreso del usuario. En una app real, vendría de Firestore.
   const [progreso, setProgreso] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  // -> 2. Estado para guardar el nombre de la bitácora actual del usuario
+  const [bitacoraActual, setBitacoraActual] = useState("");
 
-  const handleUpdatePaso = (pasoId, data) => {
-    setProgreso((prev) => ({
+  const [seccionesAbiertas, setSeccionesAbiertas] = useState({});
+
+  // -> 3. useEffect MODIFICADO para cargar tanto el perfil como el progreso
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        // --- Primero, obtenemos la fecha de nacimiento del usuario de la colección "miembros" ---
+        const miembrosRef = collection(db, "miembros");
+        const q = query(miembrosRef, where("userId", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+
+        let fechaNacimiento = null;
+        if (!querySnapshot.empty) {
+          const userProfile = querySnapshot.docs[0].data();
+          fechaNacimiento = userProfile.fechaNacimiento;
+        }
+
+        // Determinamos la bitácora actual y la guardamos en el estado
+        const etapaActual = getBitacoraPorEdad(fechaNacimiento);
+        setBitacoraActual(etapaActual);
+
+        // --- Segundo, cargamos el progreso guardado ---
+        const progresoRef = doc(db, "progreso_bitacoras", user.uid);
+        const progresoSnap = await getDoc(progresoRef);
+        if (progresoSnap.exists()) {
+          setProgreso(progresoSnap.data().progreso || {});
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del usuario:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo cargar tu información.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  // ... (el resto de las funciones como handleUpdatePaso, toggleSeccion, colapsarTodo se mantienen igual)
+  const handleUpdatePaso = async (pasoId, data) => {
+    const nuevoProgreso = { ...progreso, [pasoId]: data };
+    setProgreso(nuevoProgreso);
+
+    if (!user) return;
+    const docRef = doc(db, "progreso_bitacoras", user.uid);
+    try {
+      await setDoc(docRef, { progreso: nuevoProgreso }, { merge: true });
+    } catch (error) {
+      console.error("Error al guardar el progreso:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo guardar tu cambio.",
+      });
+    }
+  };
+
+  const toggleSeccion = (area) => {
+    setSeccionesAbiertas((prev) => ({
       ...prev,
-      [pasoId]: data,
+      [area]: !prev[area],
     }));
   };
 
-  // Filtramos y agrupamos los pasos. `useMemo` optimiza para que no se recalcule en cada render.
+  const colapsarTodo = () => {
+    setSeccionesAbiertas({});
+  };
+
   const pasosAgrupados = useMemo(() => {
+    if (!bitacoraActual) return {}; // Si aún no se ha determinado la bitácora, no agrupar nada
     return bitacoraData
       .filter((paso) => paso.etapa === bitacoraActual)
       .reduce((acc, paso) => {
         const { area } = paso;
-        if (!acc[area]) {
-          acc[area] = [];
-        }
+        if (!acc[area]) acc[area] = [];
         acc[area].push(paso);
         return acc;
       }, {});
@@ -38,31 +138,50 @@ export default function BitacoraView() {
 
   const areas = Object.keys(pasosAgrupados);
 
+  if (isLoading) {
+    return <div className={styles.loadingState}>Cargando tu progreso...</div>;
+  }
+
   return (
     <div className={styles.viewContainer}>
-      <div className="text-center">
-        {" "}
-        {/* Asumiendo que tienes una clase global para centrar texto */}
+      <div style={{ textAlign: "center" }}>
         <h2 className={styles.viewTitle}>
           Tu Bitácora Actual:{" "}
           <span className={styles.highlight}>{bitacoraActual}</span>
         </h2>
-        <div className={styles.insigniaContainer}>
-          <div className={styles.insigniaPlaceholder}></div>
-        </div>
+        {/* ... (resto del JSX de insignia y descripción se mantiene igual) ... */}
       </div>
 
-      {/* Acordeón de Áreas de Crecimiento */}
+      <div className={styles.controlesAcordeon}>
+        <button onClick={colapsarTodo} className={styles.btnColapsar}>
+          Cerrar Todo
+        </button>
+      </div>
+
       {areas.map((area) => (
-        <details key={area} className={styles.areaSection}>
-          <summary className={styles.areaTitle}>{area}</summary>
+        <details
+          key={area}
+          className={styles.areaSection}
+          open={seccionesAbiertas[area] || false}
+        >
+          <summary
+            className={styles.areaTitle}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleSeccion(area);
+            }}
+          >
+            {area}
+          </summary>
           <div className={styles.pasosGrid}>
             {pasosAgrupados[area].map((paso) => (
               <PasoBitacora
-                key={paso.id}
+                key={`${paso.etapa}-${paso.id}`} // Llave única para evitar conflictos entre bitácoras
                 paso={paso}
-                progreso={progreso[paso.id]}
-                onUpdate={handleUpdatePaso}
+                progreso={progreso[`${bitacoraActual}-${paso.id}`]} // Usamos una clave única para el progreso
+                onUpdate={(pasoId, data) =>
+                  handleUpdatePaso(`${bitacoraActual}-${pasoId}`, data)
+                }
               />
             ))}
           </div>

@@ -320,3 +320,25 @@ background-color: #e0e0e0; / Color gris claro como placeholder */
   border-radius: 6px;
   align-self: flex-end; /* Alinear a la derecha */
 }
+
+.controlesAcordeon {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-sm);
+}
+
+.btnColapsar {
+  background-color: transparent;
+  color: #555;
+  border: 1px solid #ccc;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnColapsar:hover {
+  background-color: #e9ecef;
+  border-color: #999;
+}
