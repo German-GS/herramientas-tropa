@@ -1,0 +1,322 @@
+/* src/styles/components/ProtagonistaDashboard.module.css */
+
+.dashboardContainer {
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: var(--space-lg);
+  background-color: #f4f7f9;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-base);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.email {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.logoutBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: #d32f2f;
+}
+
+.tabNav {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.tabBtn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  border-bottom-color: #ccc;
+  background-color: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.tabBtn:hover {
+  background-color: #e9ecef;
+  border-bottom-color: #999;
+}
+
+.tabBtn.active {
+  color: var(--color-tropa);
+  border-bottom-color: var(--color-tropa);
+}
+
+.contentArea {
+  background-color: #fff;
+  padding: var(--space-lg);
+  border-radius: 8px;
+  min-height: 400px;
+}
+
+.viewContainer {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.viewTitle {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-md);
+  color: #222;
+}
+
+.highlight {
+  color: var(--color-tropa);
+  font-weight: 700;
+}
+
+.logoTropa {
+  height: 50px; /* Ajusta el tamaño según necesites */
+  margin-right: var(--space-md);
+}
+
+.insigniaContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.insigniaPlaceholder {
+  width: 80px; /* Ancho placeholder de la insignia /
+height: 80px; / Alto placeholder de la insignia /
+background-color: #e0e0e0; / Color gris claro como placeholder */
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.sectionDescription {
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.areasCrecimiento h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: var(--space-md);
+}
+
+.listaAreas {
+  list-style: disc;
+  padding-left: var(--space-lg);
+  color: #555;
+  margin-bottom: var(--space-lg);
+}
+
+.listaAreas li {
+  margin-bottom: var(--space-sm);
+}
+
+.logoTropa {
+  height: 50px; /* Ajusta el tamaño según necesites */
+  width: auto;
+  margin-right: var(--space-md);
+}
+
+/* Añade esto a src/styles/components/ProtagonistaDashboard.module.css */
+
+/* Estilos para el Acordeón de Áreas */
+.areaSection {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: var(--space-md);
+  transition: background-color 0.2s;
+}
+
+.areaSection[open] {
+  background-color: #f8f9fa;
+}
+
+.areaTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: var(--space-md);
+  cursor: pointer;
+  list-style: none; /* Quita el marcador por defecto */
+}
+
+.areaTitle::-webkit-details-marker {
+  display: none; /* Quita el marcador en Chrome/Safari */
+}
+
+/* Contenedor de los pasos */
+.pasosGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Una columna por defecto */
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Estilos para cada Paso de la Bitácora */
+.pasoContainer {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.pasoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.pasoId {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-tropa);
+  font-size: 1.1rem;
+}
+
+.statusBadge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.statusPendiente {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.statusSi {
+  background-color: #4caf50;
+  color: white;
+}
+
+.statusNo {
+  background-color: #ff9800;
+  color: white;
+}
+
+.pasoSituacion {
+  font-style: italic;
+  color: #666;
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-md);
+  border-left: 3px solid #eee;
+}
+
+.pasoPregunta {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.pasoActions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border: 2px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSi {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+.btnSi:hover,
+.btnSi.selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btnNo {
+  border-color: #ff9800;
+  color: #ff9800;
+}
+.btnNo:hover,
+.btnNo.selected {
+  background-color: #ff9800;
+  color: white;
+}
+
+.pasoInputArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.pasoInputArea label {
+  font-weight: 500;
+  color: #333;
+}
+.pasoInputArea textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  font-family: var(--font-base);
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.saveBtn {
+  background-color: var(--color-tropa);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  align-self: flex-end; /* Alinear a la derecha */
+}

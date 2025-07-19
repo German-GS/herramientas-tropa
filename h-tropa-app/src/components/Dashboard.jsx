@@ -1,19 +1,28 @@
+// src/components/Dashboard.jsx
+// Este componente ahora actuará como un "enrutador" basado en el rol del usuario.
+// Por ahora, mostrará directamente el panel del protagonista.
+
 import React from "react";
-import { useAuth } from "../contexts/AuthContext";
+// import { useAuth } from "../contexts/AuthContext"; // Ya no es necesario aquí si lo usamos en los sub-componentes
+
+// Importamos el nuevo panel
+import ProtagonistaDashboard from "../components/ProtagonistasDashboard";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  // const { user } = useAuth(); // Podrías usar esto para obtener datos de Firestore y decidir qué panel mostrar
 
-  return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">Bienvenido, {user.email}</h1>
-      <button
-        onClick={logout}
-        className="bg-red-600 text-white px-4 py-2 rounded"
-      >
-        Cerrar sesión
-      </button>
-      {/* Aquí más adelante montarás tu mapa de rutas y bitácora */}
-    </div>
-  );
+  // Lógica futura:
+  // const [userData, setUserData] = useState(null);
+  // useEffect(() => {
+  //   // Fetch de datos de Firestore para obtener el rol del usuario
+  //   // const userRole = fetchUserRole(user.uid);
+  //   // setUserData({ role: userRole });
+  // }, [user.uid]);
+
+  // if (userData?.role === 'dirigente') {
+  //   return <DirigenteDashboard />;
+  // }
+
+  // Por ahora, mostramos directamente el panel del Protagonista
+  return <ProtagonistaDashboard />;
 }
