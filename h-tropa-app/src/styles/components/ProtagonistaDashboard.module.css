@@ -20,6 +20,12 @@
   margin-bottom: var(--space-md);
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* Esta línea crea el espacio */
+}
+
 .title {
   font-size: 1.75rem;
   font-weight: 600;
@@ -341,4 +347,46 @@ background-color: #e0e0e0; / Color gris claro como placeholder */
 .btnColapsar:hover {
   background-color: #e9ecef;
   border-color: #999;
+}
+/* ... (estilos existentes) ... */
+
+.invitacionBanner {
+  background-color: #fff3e0;
+  color: #856404;
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-radius: 8px;
+  border: 1px solid #ffeeba;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.invitacionBanner button {
+  margin-left: var(--space-sm);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnAceptar {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #28a745;
+}
+.btnAceptar:hover {
+  background-color: #218838;
+}
+
+.btnRechazar {
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+.btnRechazar:hover {
+  background-color: #dc3545;
+  color: white;
 }

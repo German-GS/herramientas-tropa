@@ -174,3 +174,13 @@
   border: 2px solid #ffffff;
   color: #ffffff;
 }
+
+.googleInfo {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}

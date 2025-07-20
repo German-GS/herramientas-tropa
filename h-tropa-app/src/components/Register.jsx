@@ -1,7 +1,9 @@
+// src/components/Register.jsx (Versión Definitiva y Completa)
+
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -10,18 +12,21 @@ import styles from "../styles/components/Register.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Register() {
+  const nav = useNavigate();
+  const location = useLocation();
+  const googleUser = location.state?.googleUser;
+
   const [rol, setRol] = useState("protagonista");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const nav = useNavigate();
 
   const initialValues = {
     rol: "protagonista",
-    primerNombre: "",
+    primerNombre: googleUser?.primerNombre || "",
     segundoNombre: "",
-    primerApellido: "",
+    primerApellido: googleUser?.primerApellido || "",
     segundoApellido: "",
-    correo: "",
+    correo: googleUser?.email || "",
     password: "",
     confirmPassword: "",
     fechaNacimiento: "",
@@ -49,16 +54,26 @@ export default function Register() {
     correo: Yup.string()
       .email("Formato de correo inválido")
       .required("El correo es obligatorio"),
-    password: Yup.string()
-      .required("La contraseña es obligatoria")
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/,
-        "Debe contener al menos una mayúscula, una minúscula y un número"
-      ),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Las contraseñas deben coincidir")
-      .required("Debes confirmar la contraseña"),
+    password: Yup.string().when([], {
+      is: () => !googleUser,
+      then: (schema) =>
+        schema
+          .required("La contraseña es obligatoria")
+          .min(8, "La contraseña debe tener al menos 8 caracteres")
+          .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/,
+            "Debe contener mayúscula, minúscula y número"
+          ),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    confirmPassword: Yup.string().when("password", (password, schema) => {
+      if (!googleUser && password && password.length > 0) {
+        return schema
+          .required("Debes confirmar la contraseña")
+          .oneOf([Yup.ref("password")], "Las contraseñas deben coincidir");
+      }
+      return schema.notRequired();
+    }),
   });
 
   const handleRolChange = (e, setFieldValue) => {
@@ -68,45 +83,49 @@ export default function Register() {
   };
 
   const handleRegister = async (values, actions) => {
+    // La desestructuración se mantiene igual
     const { correo, password, ...formData } = values;
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        correo,
-        password
-      );
-      const user = userCredential.user;
+      let userId;
+      if (googleUser) {
+        userId = googleUser.uid;
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          correo,
+          password
+        );
+        userId = userCredential.user.uid;
+      }
 
+      // Preparamos los datos para guardar
       delete formData.password;
       delete formData.confirmPassword;
-      formData.userId = user.uid;
+      formData.userId = userId;
       formData.fechaRegistro = new Date();
 
+      // --- LÍNEA CORREGIDA AQUÍ ---
+      // Volvemos a añadir el campo 'correo' al objeto que se guardará en Firestore
+      formData.correo = correo;
+
+      // Ahora guardamos en la colección correcta ('users' o 'miembros', asegúrate de que sea consistente)
       await addDoc(collection(db, "miembros"), formData);
 
       Swal.fire({
         icon: "success",
-        title: "¡Registro Exitoso!",
-        text: "Tu cuenta ha sido creada. Serás redirigido a la página de inicio de sesión.",
+        title: googleUser ? "¡Perfil Completado!" : "¡Registro Exitoso!",
+        text: "Tu cuenta ha sido configurada. Serás redirigido al panel principal.",
         timer: 3000,
         timerProgressBar: true,
-        allowOutsideClick: false,
       }).then(() => {
-        nav("/login");
+        nav("/dashboard");
       });
     } catch (error) {
-      let errorMessage =
-        "Ocurrió un error inesperado. Por favor, intenta de nuevo.";
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage =
-          "Este correo electrónico ya está registrado. Por favor, utiliza otro.";
-      }
-
+      console.error("Error durante el registro:", error);
       Swal.fire({
         icon: "error",
         title: "Error en el Registro",
-        text: errorMessage,
+        text: error.message,
       });
     } finally {
       actions.setSubmitting(false);
@@ -123,17 +142,26 @@ export default function Register() {
         >
           ← Regresar
         </button>
-        <h2 className={styles.titulo}>Registro de Miembros</h2>
+        <h2 className={styles.titulo}>
+          {googleUser ? "Completa tu Perfil" : "Registro de Miembros"}
+        </h2>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleRegister}
+          enableReinitialize
         >
           {({ isSubmitting, setFieldValue }) => (
             <Form className={styles.registroForm}>
-              {/* Las secciones 1 y 2 no cambian */}
+              {/* --- SECCIÓN 1: INFORMACIÓN DE CUENTA --- */}
               <div className={styles.formSection}>
                 <h3 className={styles.sectionTitle}>Información de Cuenta</h3>
+                {googleUser && (
+                  <p className={styles.googleInfo}>
+                    Estás completando tu perfil con tu cuenta de Google. Tu
+                    correo no se puede cambiar y no necesitas contraseña.
+                  </p>
+                )}
                 <div className={styles.columnaSimple}>
                   <label className={styles.label}>Rol en el Movimiento:</label>
                   <Field
@@ -153,6 +181,7 @@ export default function Register() {
                     type="email"
                     className={styles.input}
                     placeholder="Correo Electrónico"
+                    disabled={!!googleUser}
                   />
                   <ErrorMessage
                     name="correo"
@@ -160,53 +189,59 @@ export default function Register() {
                     className={styles.error}
                   />
                 </div>
-                <div className={styles.columnaDoble}>
-                  <div className={styles.passwordInputContainer}>
-                    <Field
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      className={styles.input}
-                      placeholder="Contraseña"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className={styles.passwordToggle}
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                  <div className={styles.passwordInputContainer}>
-                    <Field
-                      name="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      className={styles.input}
-                      placeholder="Confirmar Contraseña"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className={styles.passwordToggle}
-                    >
-                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-                <div className={styles.columnaDoble}>
-                  <ErrorMessage
-                    name="password"
-                    component="div"
-                    className={styles.error}
-                  />
-                  <ErrorMessage
-                    name="confirmPassword"
-                    component="div"
-                    className={styles.error}
-                  />
-                </div>
+                {!googleUser && (
+                  <>
+                    <div className={styles.columnaDoble}>
+                      <div className={styles.passwordInputContainer}>
+                        <Field
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          className={styles.input}
+                          placeholder="Contraseña"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={styles.passwordToggle}
+                        >
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                      <div className={styles.passwordInputContainer}>
+                        <Field
+                          name="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          className={styles.input}
+                          placeholder="Confirmar Contraseña"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className={styles.passwordToggle}
+                        >
+                          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className={styles.columnaDoble}>
+                      <ErrorMessage
+                        name="password"
+                        component="div"
+                        className={styles.error}
+                      />
+                      <ErrorMessage
+                        name="confirmPassword"
+                        component="div"
+                        className={styles.error}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
+
+              {/* --- SECCIÓN 2: DATOS PERSONALES (COMPLETA) --- */}
               <div className={styles.formSection}>
                 <h3 className={styles.sectionTitle}>Datos Personales</h3>
                 <div className={styles.columnaDoble}>
@@ -270,7 +305,7 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Sección de Protagonista no cambia */}
+              {/* --- SECCIONES CONDICIONALES (COMPLETAS) --- */}
               {rol === "protagonista" && (
                 <div className={styles.formSection}>
                   <h3 className={styles.sectionTitle}>
@@ -336,8 +371,6 @@ export default function Register() {
                   </div>
                 </div>
               )}
-
-              {/* --- CAMBIOS APLICADOS AQUÍ --- */}
               {rol === "dirigente" && (
                 <div className={styles.formSection}>
                   <h3 className={styles.sectionTitle}>
@@ -367,11 +400,9 @@ export default function Register() {
                   </div>
                   <div className={styles.columnaDoble}>
                     <div>
-                      {/* 1. Etiqueta actualizada */}
                       <label className={styles.label}>
                         Nivel de formación:
                       </label>
-                      {/* 2. Campo convertido a <select> con las nuevas opciones */}
                       <Field
                         as="select"
                         name="cursos"
@@ -424,7 +455,11 @@ export default function Register() {
                 type="submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Registrando..." : "Registrar Miembro"}
+                {isSubmitting
+                  ? "Registrando..."
+                  : googleUser
+                  ? "Finalizar Registro"
+                  : "Registrar Miembro"}
               </button>
             </Form>
           )}

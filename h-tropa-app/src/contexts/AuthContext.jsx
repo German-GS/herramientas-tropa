@@ -1,71 +1,71 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+/// src/contexts/AuthContext.jsx (Adaptado al flujo del proyecto anterior)
+
+import React, { useContext, useState, useEffect } from "react";
+import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup, // -> Volvemos a usar signInWithPopup
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
 
-/* ------------------------------------------------------
-   AuthContext.jsx — Manejador global de autenticación
-   • Registro email / contraseña
-   • Login email / contraseña
-   • Login con Google (crea doc en /users)
-   • Reset password
-   • Logout
------------------------------------------------------- */
+const AuthContext = React.createContext();
 
-const AuthContext = createContext();
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  /* --- Observador de sesión --- */
-  useEffect(() => onAuthStateChanged(auth, setUser), []);
-
-  /* ---------- Acciones ---------- */
-  const register = (email, pw) =>
-    createUserWithEmailAndPassword(auth, email, pw);
-  const login = (email, pw) => signInWithEmailAndPassword(auth, email, pw);
-  const resetPassword = (email) => sendPasswordResetEmail(auth, email);
-  const logout = () => signOut(auth);
-
-  /** Login con Google → crea /users/{uid} si no existe */
-  async function loginWithGoogle() {
-    const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-    const { uid, email, displayName, photoURL } = cred.user;
-
-    const userRef = doc(db, "users", uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        email,
-        nombre: displayName || "",
-        foto: photoURL || "",
-        rol: "padre", // ajusta según tu lógica
-        creadoEn: new Date(),
-      });
-    }
-
-    return cred.user;
+  // La función de registro se mantiene igual
+  function register(email, password) {
+    return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  /* ---------- Valor expuesto ---------- */
+  function login(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
+  }
+
+  // La función de Google ahora simplemente abre el popup
+  function loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  }
+
+  function logout() {
+    return signOut(auth);
+  }
+
+  function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
   const value = {
     user,
-    register,
+    loading,
     login,
     loginWithGoogle,
-    resetPassword,
+    register,
     logout,
+    resetPassword,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 }

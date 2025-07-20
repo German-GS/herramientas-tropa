@@ -1,0 +1,88 @@
+/* src/styles/components/NotificacionBell.module.css */
+
+.bellContainer {
+  position: relative;
+}
+
+.bellButton {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #555;
+  cursor: pointer;
+  position: relative;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #f44336;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 300px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  border: 1px solid #eee;
+}
+
+.dropdownItem {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+.dropdownItem p {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.dropdownActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.dropdownActions button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnAceptar {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #28a745;
+}
+.btnAceptar:hover {
+  background-color: #218838;
+}
+
+.btnRechazar {
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+.btnRechazar:hover {
+  background-color: #dc3545;
+  color: white;
+}

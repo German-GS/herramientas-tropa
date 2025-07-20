@@ -1,21 +1,32 @@
-// src/App.js
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// En tu archivo de rutas principal (ej. App.jsx)
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-
-import Register from "./components/Register";
 import Login from "./components/Login";
+import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <Router>
+      <AuthProvider>
         <Routes>
-          <Route path="/registro" element={<Register />} />
+          {/* -> 1. RUTA AÑADIDA PARA LA PÁGINA PRINCIPAL <- */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+          <Route path="/registero" element={<Register />} />
+
+          {/* 2. La ruta a /dashboard también se mantiene por si quieres un enlace directo */}
           <Route
             path="/dashboard"
             element={
@@ -24,11 +35,10 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Cualquier otra ruta redirige a login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* ... otras rutas ... */}
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

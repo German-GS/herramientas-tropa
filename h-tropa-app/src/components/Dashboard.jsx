@@ -1,28 +1,66 @@
-// src/components/Dashboard.jsx
-// Este componente ahora actuará como un "enrutador" basado en el rol del usuario.
-// Por ahora, mostrará directamente el panel del protagonista.
+// src/components/Dashboard.jsx (Versión Definitiva)
 
-import React from "react";
-// import { useAuth } from "../contexts/AuthContext"; // Ya no es necesario aquí si lo usamos en los sub-componentes
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { db } from "../firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
-// Importamos el nuevo panel
-import ProtagonistaDashboard from "../components/ProtagonistasDashboard";
+import ProtagonistaDashboard from "./ProtagonistaDashboard"; // Corregido a singular
+import DirigenteDashboard from "./DirigenteDashboard";
 
 export default function Dashboard() {
-  // const { user } = useAuth(); // Podrías usar esto para obtener datos de Firestore y decidir qué panel mostrar
+  const { user } = useAuth();
+  // -> 1. Guardaremos el perfil completo del usuario, no solo el rol
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Lógica futura:
-  // const [userData, setUserData] = useState(null);
-  // useEffect(() => {
-  //   // Fetch de datos de Firestore para obtener el rol del usuario
-  //   // const userRole = fetchUserRole(user.uid);
-  //   // setUserData({ role: userRole });
-  // }, [user.uid]);
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-  // if (userData?.role === 'dirigente') {
-  //   return <DirigenteDashboard />;
-  // }
+    const fetchUserProfile = async () => {
+      const q = query(
+        collection(db, "miembros"),
+        where("userId", "==", user.uid)
+      );
+      const querySnapshot = await getDocs(q);
 
-  // Por ahora, mostramos directamente el panel del Protagonista
-  return <ProtagonistaDashboard />;
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        // -> 2. Guardamos todo el perfil en el estado
+        setUserProfile(userData);
+      }
+      setLoading(false);
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
+  if (loading) {
+    return <div>Cargando panel de trabajo...</div>;
+  }
+
+  if (!userProfile) {
+    // Esto puede pasar si un usuario se autentica pero no tiene perfil en 'miembros'
+    // Podríamos redirigirlo a completar su perfil.
+    return (
+      <div>
+        No se encontró el perfil de usuario. Por favor, contacta a un dirigente.
+      </div>
+    );
+  }
+
+  // -> 3. Pasamos el perfil completo como 'prop' al panel correspondiente
+  if (userProfile.rol === "dirigente") {
+    return <DirigenteDashboard userProfile={userProfile} />;
+  }
+
+  if (userProfile.rol === "protagonista") {
+    return <ProtagonistaDashboard userProfile={userProfile} />;
+  }
+
+  // Fallback por si el rol no es ninguno de los esperados
+  return <div>Rol de usuario no reconocido.</div>;
 }
