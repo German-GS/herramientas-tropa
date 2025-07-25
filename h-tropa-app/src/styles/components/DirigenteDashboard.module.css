@@ -1,6 +1,13 @@
 /* src/styles/components/DirigenteDashboard.module.css */
+/* Versión Limpia, Organizada y Responsive */
 
-/* Estilos Generales del Dashboard */
+/* --- 1. ESTILOS GENERALES DEL DASHBOARD --- */
+:global(body) {
+  display: block;
+  justify-content: initial;
+  align-items: initial;
+}
+
 .dashboardContainer {
   width: 100%;
   max-width: 1400px;
@@ -9,6 +16,14 @@
   font-family: var(--font-base);
 }
 
+.loading {
+  text-align: center;
+  padding: var(--space-lg);
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* --- 2. ENCABEZADO Y NAVEGACIÓN --- */
 .header {
   display: flex;
   justify-content: space-between;
@@ -16,6 +31,12 @@
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: var(--space-md);
   margin-bottom: var(--space-lg);
+  gap: 1rem;
+}
+
+.headerTitle {
+  text-align: left;
+  flex-grow: 1;
 }
 
 .title {
@@ -24,8 +45,10 @@
   color: #333;
 }
 
-.email {
+.email,
+.emailDesktop {
   color: #666;
+  font-size: 0.9rem;
 }
 
 .logoutBtn {
@@ -41,25 +64,182 @@
 .logoutBtn:hover {
   background-color: #d32f2f;
 }
-.loading {
-  text-align: center;
-  padding: var(--space-lg);
-  font-size: 1.2rem;
+
+/* --- 3. NAVEGACIÓN RESPONSIVE (HAMBURGUESA Y PESTAÑAS) --- */
+.hamburgerBtn {
+  display: none; /* Oculto en escritorio por defecto */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
 }
 
-/* Estilos del Módulo de Gestión de Patrullas */
-.gestionContainer {
-  display: grid;
-  grid-template-columns: 300px 1fr;
+.desktopNav {
+  display: flex;
+  border-bottom: 2px solid #eee;
+  margin-bottom: var(--space-lg);
+}
+
+.navBtn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  color: #555;
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.navBtn:hover {
+  color: var(--color-tropa);
+}
+.navBtn.active {
+  color: var(--color-tropa);
+  border-bottom-color: var(--color-tropa);
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.mobileMenuPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+.mobileMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid #eee;
+}
+
+.mobileUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.mobileMenuLogo {
+  height: 35px;
+  width: auto;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.mobileNavLink {
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  width: 100%;
+  cursor: pointer;
+}
+.mobileNavLink:hover {
+  background-color: #f5f5f5;
+}
+
+/* --- 4. CONTENEDOR DE MÓDULOS (TARJETA PRINCIPAL) --- */
+.moduleCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: var(--space-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.moduleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid #eee;
+}
+
+.moduleTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.moduleLogo {
+  height: 40px;
+}
+
+/* --- 5. MÓDULO: GESTIÓN DE PATRULLAS --- */
+.gestionWrapper {
+  position: relative;
+}
+
+.gestionHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.inviteBtn {
+  background-color: var(--color-tropa);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.inviteBtn:hover {
+  transform: scale(1.05);
+}
+
+.gestionContainerReordered {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-lg);
-  align-items: start;
+}
+
+.patrullasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
 }
 
 .columna {
   background-color: #f4f7f9;
   border-radius: 12px;
   padding: var(--space-md);
-  min-height: 500px;
+  min-height: 200px;
 }
 
 .columnaTitle {
@@ -68,12 +248,6 @@
   padding-bottom: var(--space-sm);
   margin-bottom: var(--space-md);
   border-bottom: 1px solid #ddd;
-}
-
-.patrullasGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-lg);
 }
 
 .patrullaCard {
@@ -119,46 +293,441 @@
   transition: all 0.2s;
   min-height: 200px;
 }
-
 .addPatrullaBtn:hover {
   background-color: #f4f7f9;
   border-color: var(--color-tropa);
   color: var(--color-tropa);
 }
 
-/* Añade esto a src/styles/components/DirigenteDashboard.module.css */
-
-/* Estilos para la tarjeta del Módulo */
-.moduleCard {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: var(--space-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+/* --- 6. MÓDULOS: FORMULARIOS GENERALES (JUEGOS, ASISTENCIA, REPORTES) --- */
+.formModuleContainer {
+  padding-top: 1rem;
 }
 
-.moduleHeader {
+.formSectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  align-items: start;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+.formGroup label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.errorMsg {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.submitBtn {
+  background-color: var(--color-tropa);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.submitBtn:disabled {
+  background-color: #999;
+}
+
+.cancelBtn {
+  background-color: #757575;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.cancelBtn:hover {
+  background-color: #616161;
+}
+
+.tableResponsive {
+  overflow-x: auto;
+}
+
+/* --- 7. MÓDULO: REGISTRO DE JUEGOS --- */
+.puntajesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: var(--space-lg);
+}
+
+.puntajeCard {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.puntajeCardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.puntajeFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.registrosContainer {
+  margin-top: 2.5rem;
+}
+
+.historialHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid #eee;
+  margin-bottom: 1.5rem;
 }
 
-.moduleTitle {
+.cicloBtn {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+.cicloBtn:hover {
+  background-color: #1565c0;
+}
+
+.grupoFecha {
+  margin-bottom: 2rem;
+}
+
+.fechaTitulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  color: #495057;
+}
+
+.registrosTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.registrosTable th,
+.registrosTable td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+.registrosTable th {
+  background-color: #f0f0f0;
+  font-weight: 700;
+}
+.registrosTable tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.puntajesCell {
+  padding: 0.6rem 0;
+}
+.puntajesChips {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  justify-content: center;
+  gap: 0.35rem 0.6rem;
+}
+.patrullaLabel {
+  display: none; /* oculto en desktop */
+}
+
+/* Chips */
+.puntajeItem {
+  background: #f4f7f9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.actionButtons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+.editBtn {
+  color: #1976d2;
+}
+.editBtn:hover {
+  background-color: #e3f2fd;
+}
+.deleteBtn {
+  color: #d32f2f;
+}
+.deleteBtn:hover {
+  background-color: #ffcdd2;
+}
+
+/* --- 8. MÓDULO: ASISTENCIA E INSPECCIÓN --- */
+.asistenciaHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f4f7f9;
+  border-radius: 8px;
+}
+.asistenciaHeader label {
+  font-weight: 600;
+}
+.asistenciaHeader .formInput {
+  max-width: 200px;
+}
+
+.asistenciaContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.patrullaSectionTitle {
   font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-tropa);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-tropa);
+}
+
+.miembrosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.miembroInspectionCard {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.miembroName {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.asistenciaToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.asistenciaToggle label {
+  font-weight: 500;
+}
+.asistenciaToggle input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.inspeccionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.inspeccionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.inspeccionItem label {
+  font-size: 0.9rem;
+  color: #333;
+}
+.inspeccionItem input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.inspeccionItem input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- 9. MÓDULO: REPORTES --- */
+.reportHeader {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: #f4f7f9;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.reportSection {
+  margin-bottom: 2.5rem;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.chartContainer {
+  padding: 1.5rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.podioContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.puesto {
+  padding: 1rem;
+  border-radius: 8px;
+  color: white;
+  width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.puesto svg {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.puesto h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.puesto p {
+  font-size: 1.8rem;
   font-weight: 700;
 }
 
-.moduleLogo {
-  height: 40px;
+.puesto.oro {
+  background: linear-gradient(145deg, #ffd700, #f0c400);
+}
+.puesto.plata {
+  background: linear-gradient(145deg, #c0c0c0, #a9a9a9);
+}
+.puesto.bronce {
+  background: linear-gradient(145deg, #cd7f32, #b8732e);
 }
 
-/* Estilos para la Transición "Asignando..." */
-.gestionWrapper {
-  position: relative; /* Contenedor necesario para el overlay */
+.asistenciaTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.asistenciaTable th,
+.asistenciaTable td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+.asistenciaTable th {
+  background-color: #f0f0f0;
+}
+.asistenciaTable .percentageBar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.asistenciaTable .barFill {
+  height: 20px;
+  background-color: var(--color-tropa);
+  border-radius: 4px;
+  text-align: right;
+  padding: 0 8px;
+  color: white;
+  font-size: 0.8rem;
+  line-height: 20px;
+  white-space: nowrap;
 }
 
+/* --- 10. OTROS Y ANIMACIONES --- */
 .updateOverlay {
   position: absolute;
   top: 0;
@@ -187,6 +756,111 @@
   margin-bottom: 1rem;
 }
 
+/* ====== BANDERÍN / GANADORES ====== */
+.banderinCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.6rem 2rem;
+  border-radius: 16px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  max-width: 460px;
+  margin: 0 auto 2rem;
+}
+.banderinIcon {
+  font-size: 2.6rem;
+  color: #f0c400;
+}
+
+.golden {
+  background: linear-gradient(
+    135deg,
+    #fff9e6 0%,
+    #fff 40%,
+    #fff 60%,
+    #fff9e6 100%
+  );
+  border: 0;
+  box-shadow: 0 10px 40px rgba(240, 196, 0, 0.25);
+  position: relative;
+}
+.golden::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.4) inset;
+  pointer-events: none;
+}
+.banderinIcon {
+  font-size: 2.2rem;
+  color: #f0c400;
+}
+.totalPts {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-tropa);
+}
+.noteText {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.catsWinnersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.catWinnerCard {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+}
+.catTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+.winnersList {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.9rem;
+}
+.winnersList li {
+  margin-bottom: 0.25rem;
+}
+
+.chartContainer {
+  padding: 1.5rem;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 1.5rem;
+}
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .banderinCard {
+    max-width: 100%;
+    padding: 1.2rem;
+  }
+  .catsWinnersGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -196,24 +870,162 @@
   }
 }
 
-/* ... (estilos existentes) ... */
-
-.gestionHeader {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--space-md);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.inviteBtn {
-  background-color: var(--color-tropa);
-  color: white;
-  border: none;
-  padding: 0.7rem 1.4rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s;
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
-.inviteBtn:hover {
-  transform: scale(1.05);
+
+/* --- 11. MEDIA QUERIES (RESPONSIVE) --- */
+@media (max-width: 992px) {
+  /* No se necesitan cambios específicos aquí por ahora */
+}
+
+@media (max-width: 768px) {
+  /* Evitar scroll horizontal global */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+  .dashboardContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* No ocultar overflow en internos */
+  .dashboardContainer,
+  .moduleCard,
+  .formModuleContainer {
+    max-width: 100%;
+    overflow-x: visible;
+  }
+
+  /* Header */
+  .header {
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+  .hamburgerBtn {
+    display: block !important;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+    z-index: 2;
+  }
+  .headerTitle {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .title {
+    white-space: normal;
+    overflow: visible;
+  }
+  .emailDesktop {
+    display: none;
+  }
+  .logoutBtn {
+    flex-shrink: 0;
+  }
+
+  /* Espaciado lateral para notar la tarjeta */
+  .formModuleContainer,
+  .moduleCard {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .reportHeader {
+    flex-direction: column; /* Apila los filtros de fecha verticalmente */
+    align-items: stretch; /* Asegura que cada filtro ocupe el ancho completo */
+    gap: 1rem; /* Añade un espacio vertical entre los filtros */
+  }
+  /* Formularios RegistroJuegos */
+  .puntajesGrid,
+  .puntajeFields {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tablas grandes => card-table */
+  .tableResponsive {
+    overflow-x: auto;
+  }
+  .registrosTable thead {
+    display: none;
+  }
+  .registrosTable,
+  .registrosTable tbody,
+  .registrosTable tr {
+    display: block;
+    width: 100%;
+  }
+  .registrosTable tr {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+  .registrosTable td {
+    display: block;
+    border: none;
+    padding: 0.4rem 0;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .registrosTable td:first-child {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Celda de puntajes en móvil */
+  .puntajesCell {
+    padding-top: 0;
+  }
+  .patrullaLabel {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+    color: #333; /* color de texto normal */
+  }
+  .puntajesChips {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: flex-start;
+  }
+
+  /* Botones acción */
+  .actionButtons {
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Charts / podio */
+  .podioContainer {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .puesto {
+    width: 100%;
+  }
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
 }

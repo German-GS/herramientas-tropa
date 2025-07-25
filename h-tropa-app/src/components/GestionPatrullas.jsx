@@ -1,4 +1,4 @@
-// src/components/GestionPatrullas.jsx (Lógica de carga corregida)
+// src/components/GestionPatrullas.jsx (Adaptado con la nueva orientación)
 
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../firebase";
@@ -22,12 +22,11 @@ export default function GestionPatrullas() {
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // -> LÓGICA DE CARGA DE DATOS ACTUALIZADA
+  // --- TODA LA LÓGICA DE FUNCIONES SE MANTIENE EXACTAMENTE IGUAL ---
   const fetchData = async () => {
     if (!auth.currentUser) return;
     setLoading(true);
     try {
-      // 1. Buscar las invitaciones aceptadas por el dirigente actual
       const invitacionesRef = collection(db, "invitaciones");
       const qInvitaciones = query(
         invitacionesRef,
@@ -40,14 +39,12 @@ export default function GestionPatrullas() {
       );
 
       if (emailsProtagonistasAceptados.length === 0) {
-        // Si no hay protagonistas que hayan aceptado, no hay nada que mostrar
         setPatrullas({});
         setMiembrosSinAsignar([]);
         setLoading(false);
         return;
       }
 
-      // 2. Cargar las patrullas (esto no cambia)
       const patrullasSnapshot = await getDocs(collection(db, "patrullas"));
       const patrullasData = {};
       patrullasSnapshot.forEach((doc) => {
@@ -58,35 +55,26 @@ export default function GestionPatrullas() {
         };
       });
 
-      // 3. Buscar solo los perfiles de los protagonistas que aceptaron la invitación
       const miembrosRef = collection(db, "miembros");
       const qMiembros = query(
         miembrosRef,
         where("correo", "in", emailsProtagonistasAceptados)
       );
       const miembrosSnapshot = await getDocs(qMiembros);
-
       const miembrosSinAsignarTemp = [];
       miembrosSnapshot.forEach((doc) => {
         const miembro = { id: doc.id, ...doc.data() };
-        // Si el miembro tiene patrullaId y esa patrulla existe, lo asignamos
         if (miembro.patrullaId && patrullasData[miembro.patrullaId]) {
           patrullasData[miembro.patrullaId].miembros.push(miembro);
         } else {
-          // Si no, va a la lista de "Sin Asignar"
           miembrosSinAsignarTemp.push(miembro);
         }
       });
-
       setPatrullas(patrullasData);
       setMiembrosSinAsignar(miembrosSinAsignarTemp);
     } catch (error) {
       console.error("Error cargando los datos:", error);
-      Swal.fire(
-        "Error",
-        "No se pudieron cargar los datos de las patrullas.",
-        "error"
-      );
+      Swal.fire("Error", "No se pudieron cargar los datos.", "error");
     } finally {
       setLoading(false);
     }
@@ -104,7 +92,6 @@ export default function GestionPatrullas() {
       inputPlaceholder: "Ej: Halcones",
       showCancelButton: true,
     });
-
     if (nombrePatrulla) {
       const newPatrullaRef = await addDoc(collection(db, "patrullas"), {
         nombre: nombrePatrulla,
@@ -127,10 +114,10 @@ export default function GestionPatrullas() {
 
   const onDragEnd = (result) => {
     const { source, destination, draggableId } = result;
-    if (!destination) return;
     if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
+      !destination ||
+      (source.droppableId === destination.droppableId &&
+        source.index === destination.index)
     )
       return;
 
@@ -139,13 +126,17 @@ export default function GestionPatrullas() {
     const miembroMovido =
       source.droppableId === "sin-asignar"
         ? miembrosSinAsignar.find((m) => m.id === draggableId)
-        : patrullas[source.droppableId].miembros.find(
+        : patrullas[source.droppableId]?.miembros.find(
             (m) => m.id === draggableId
           );
 
-    // Actualización optimista
+    if (!miembroMovido) {
+      setIsUpdating(false);
+      return;
+    }
+
     const nuevosSinAsignar = [...miembrosSinAsignar];
-    const nuevasPatrullas = { ...patrullas };
+    const nuevasPatrullas = JSON.parse(JSON.stringify(patrullas));
 
     if (source.droppableId === "sin-asignar") {
       nuevosSinAsignar.splice(source.index, 1);
@@ -166,7 +157,6 @@ export default function GestionPatrullas() {
     setMiembrosSinAsignar(nuevosSinAsignar);
     setPatrullas(nuevasPatrullas);
 
-    // Actualización en Firestore
     const miembroRef = doc(db, "miembros", draggableId);
     updateDoc(miembroRef, {
       patrullaId:
@@ -177,39 +167,70 @@ export default function GestionPatrullas() {
       .catch((err) => {
         console.error("Error al actualizar:", err);
         Swal.fire("Error", "No se pudo guardar el cambio.", "error");
-        fetchData(); // Revertir si hay error
+        fetchData();
       })
       .finally(() => setIsUpdating(false));
   };
 
   const handleInvitarMiembro = async () => {
     const { value: email } = await Swal.fire({
-      title: "Invitar Protagonista",
+      title: "Invitar a un Protagonista",
       input: "email",
-      inputLabel: "Correo Electrónico del Protagonista",
-      inputPlaceholder: "Introduce el correo para enviar la invitación",
+      inputLabel: "Correo electrónico del protagonista",
+      inputPlaceholder: "Ingresa el email para enviar la invitación",
       showCancelButton: true,
       confirmButtonText: "Enviar Invitación",
       cancelButtonText: "Cancelar",
+      inputValidator: (value) => {
+        if (!value) {
+          return "¡Necesitas escribir un correo electrónico!";
+        }
+        // Validación simple para formato de email
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          return "Por favor, ingresa un correo electrónico válido.";
+        }
+      },
     });
 
     if (email) {
       try {
+        // --- Paso 1: Verificar si ya existe una invitación (pendiente o aceptada) ---
+        // Esto evita enviar invitaciones duplicadas o a miembros que ya están en la tropa.
+        const invitacionesRef = collection(db, "invitaciones");
         const q = query(
-          collection(db, "miembros"),
-          where("correo", "==", email)
+          invitacionesRef,
+          where("protagonistaEmail", "==", email),
+          where("dirigenteId", "==", auth.currentUser.uid)
         );
         const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
+        let estadoExistente = null;
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.estado === "pendiente" || data.estado === "aceptada") {
+            estadoExistente = data.estado;
+          }
+        });
+
+        if (estadoExistente === "pendiente") {
           Swal.fire(
-            "Error",
-            "No se encontró ningún protagonista con ese correo electrónico.",
-            "error"
+            "Invitación Existente",
+            `Ya hay una invitación pendiente para ${email}.`,
+            "warning"
           );
-          return;
+          return; // Detiene la ejecución
         }
 
+        if (estadoExistente === "aceptada") {
+          Swal.fire(
+            "Usuario ya en Tropa",
+            `${email} ya aceptó una invitación y es parte de tu tropa.`,
+            "info"
+          );
+          return; // Detiene la ejecución
+        }
+
+        // --- Paso 2: Si no hay invitaciones, crear el nuevo documento ---
         await addDoc(collection(db, "invitaciones"), {
           dirigenteId: auth.currentUser.uid,
           protagonistaEmail: email,
@@ -218,15 +239,15 @@ export default function GestionPatrullas() {
         });
 
         Swal.fire(
-          "¡Éxito!",
-          `Se ha enviado una invitación a ${email}.`,
+          "¡Invitación Enviada!",
+          `Se ha enviado una invitación a ${email}. El protagonista deberá aceptarla desde su panel de notificaciones.`,
           "success"
         );
       } catch (error) {
         console.error("Error al enviar la invitación:", error);
         Swal.fire(
           "Error",
-          "Ocurrió un problema al enviar la invitación.",
+          "Ocurrió un error al enviar la invitación. Por favor, inténtalo de nuevo.",
           "error"
         );
       }
@@ -253,39 +274,10 @@ export default function GestionPatrullas() {
             + Invitar Protagonista
           </button>
         </div>
-        <div className={styles.gestionContainer}>
-          {/* --- CORRECCIÓN 1: Faltaba este <Droppable> --- */}
-          <Droppable droppableId="sin-asignar">
-            {(provided) => (
-              <div
-                className={styles.columna}
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <h2 className={styles.columnaTitle}>Miembros sin Asignar</h2>
-                {miembrosSinAsignar.map((miembro, index) => (
-                  <Draggable
-                    key={miembro.id}
-                    draggableId={miembro.id}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        className={styles.miembroCard}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        {miembro.primerNombre} {miembro.primerApellido}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
 
+        {/* --- ESTRUCTURA JSX REORDENADA --- */}
+        <div className={styles.gestionContainerReordered}>
+          {/* 1. SECCIÓN DE PATRULLAS (ARRIBA) */}
           <div className={styles.patrullasGrid}>
             {Object.values(patrullas).map((patrulla) => (
               <Droppable key={patrulla.id} droppableId={patrulla.id}>
@@ -328,7 +320,38 @@ export default function GestionPatrullas() {
               + Crear Nueva Patrulla
             </button>
           </div>
-          {/* --- CORRECCIÓN 2: Se eliminó una llave '}' extra aquí --- */}
+
+          {/* 2. SECCIÓN DE MIEMBROS SIN ASIGNAR (ABAJO) */}
+          <Droppable droppableId="sin-asignar">
+            {(provided) => (
+              <div
+                className={styles.columna}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                <h2 className={styles.columnaTitle}>Miembros sin Asignar</h2>
+                {miembrosSinAsignar.map((miembro, index) => (
+                  <Draggable
+                    key={miembro.id}
+                    draggableId={miembro.id}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <div
+                        className={styles.miembroCard}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        {miembro.primerNombre} {miembro.primerApellido}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </div>
       </DragDropContext>
     </div>

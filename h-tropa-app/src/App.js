@@ -1,4 +1,4 @@
-// En tu archivo de rutas principal (ej. App.jsx)
+// src/App.jsx (Corregido y Limpio)
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -12,7 +12,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          {/* -> 1. RUTA AÑADIDA PARA LA PÁGINA PRINCIPAL <- */}
+          {/* La ruta principal y /dashboard apuntan al mismo sitio protegido */}
           <Route
             path="/"
             element={
@@ -21,12 +21,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Register />} />
-          <Route path="/registero" element={<Register />} />
-
-          {/* 2. La ruta a /dashboard también se mantiene por si quieres un enlace directo */}
           <Route
             path="/dashboard"
             element={
@@ -35,7 +29,12 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* ... otras rutas ... */}
+
+          {/* Rutas públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+
+          {/* Se eliminó la ruta duplicada con el error de tipeo "/registero" */}
         </Routes>
       </AuthProvider>
     </Router>
