@@ -928,6 +928,12 @@
   gap: 2rem;
 }
 
+.expedienteDivider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 1rem 0;
+}
+
 .expedienteColumna h4 {
   font-size: 1.1rem;
   margin-bottom: 1rem;

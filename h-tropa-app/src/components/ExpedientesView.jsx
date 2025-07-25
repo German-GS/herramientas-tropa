@@ -257,6 +257,23 @@ export default function ExpedientesView() {
                                 {miembro.etapaActual}
                               </span>
                             </p>
+
+                            {/* --- ↓↓↓ LÍNEAS AÑADIDAS ↓↓↓ --- */}
+                            <hr className={styles.expedienteDivider} />
+                            <p>
+                              <strong>Tutor / Padre o Madre:</strong>{" "}
+                              {miembro.responsableNombre}
+                            </p>
+                            <p>
+                              <strong>Teléfono Tutor:</strong>{" "}
+                              {miembro.telefonoEmergencia}
+                            </p>
+                            <p>
+                              <strong>Alergias:</strong>{" "}
+                              {miembro.alergias || "Ninguna reportada"}
+                            </p>
+                            {/* --- ↑↑↑ FIN DE LÍNEAS AÑADIDAS ↑↑↑ --- */}
+
                             <div
                               className={
                                 estadoTransicion.enTransicion
@@ -270,7 +287,6 @@ export default function ExpedientesView() {
                               </p>
                             </div>
                           </div>
-
                           <div className={styles.expedienteColumna}>
                             <h4>Avance por Área</h4>
                             {Object.entries(miembro.avancePorArea).map(

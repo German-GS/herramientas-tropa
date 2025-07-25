@@ -94,80 +94,87 @@ export default function Login() {
   };
   // --- ESTRUCTURA JSX CORREGIDA ---
   return (
-    <div className={styles.container}>
-      <div className={styles.loginMessages}>
-        {error && (
-          <div className={styles.error} role="alert">
-            {error}
-          </div>
-        )}
-        {msg && (
-          <div className={styles.msg} role="status">
-            {msg}
-          </div>
-        )}
-      </div>
-
-      {/* Ya no hay un div 'loginContent' extra. El contenido está directamente en 'container' */}
-      <img src={troopLogo} alt="Tropa" className={styles.logo} />
-      <h1 className={styles.title}>Iniciar Sesión</h1>
-      <p className={styles.subtitle}>Accede a tu cuenta</p>
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div>
-          <label className={styles.formLabel}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.formInput}
-            placeholder="guiayscout@email.com"
-            required
-          />
+    // 'div div' corregido a solo 'div'
+    <div className={styles.loginPageContainer}>
+      <div className={styles.container}>
+        <div className={styles.loginMessages}>
+          {error && (
+            <div className={styles.error} role="alert">
+              {error}
+            </div>
+          )}
+          {msg && (
+            <div className={styles.msg} role="status">
+              {msg}
+            </div>
+          )}
         </div>
-        <div>
-          <label className={styles.formLabel}>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.formInput}
-            placeholder="••••••••"
-            required
-          />
-        </div>
-        <button type="submit" className={styles.submitBtn} disabled={isLoading}>
-          {isLoading ? "Entrando..." : "Entrar"}
-        </button>
+
+        <img src={troopLogo} alt="Tropa" className={styles.logo} />
+        <h1 className={styles.title}>Iniciar Sesión</h1>
+        <p className={styles.subtitle}>Accede a tu cuenta</p>
+
+        {/* El 'div' contenedor duplicado fue eliminado de aquí */}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div>
+            <label className={styles.formLabel}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={styles.formInput}
+              placeholder="guiayscout@email.com"
+              required
+            />
+          </div>
+          <div>
+            <label className={styles.formLabel}>Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.formInput}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={isLoading}
+          >
+            {isLoading ? "Entrando..." : "Entrar"}
+          </button>
+          <button
+            onClick={() => nav("/registro")}
+            className={styles.registerBtn}
+            type="button"
+          >
+            Registrarse
+          </button>
+        </form>
+
+        <div className={styles.divider}>o</div>
+
         <button
-          onClick={() => nav("/registro")}
-          className={styles.registerBtn}
+          onClick={handleGoogle}
+          className={styles.googleBtn}
+          disabled={isLoading}
           type="button"
         >
-          Registrarse
+          <FaGoogle className={styles.googleIcon} /> Entrar con Google
         </button>
-      </form>
 
-      <div className={styles.divider}>o</div>
+        <button onClick={handleForgot} className={styles.forgotBtn}>
+          ¿Olvidaste tu contraseña?
+        </button>
 
-      <button
-        onClick={handleGoogle}
-        className={styles.googleBtn}
-        disabled={isLoading}
-        type="button" // Asegúrate de tener type="button"
-      >
-        <FaGoogle className={styles.googleIcon} /> Entrar con Google
-      </button>
-
-      <button onClick={handleForgot} className={styles.forgotBtn}>
-        ¿Olvidaste tu contraseña?
-      </button>
-
-      <img
-        src={assocLogo}
-        alt="Asociación"
-        className={styles.associationLogo}
-      />
+        <img
+          src={assocLogo}
+          alt="Asociación"
+          className={styles.associationLogo}
+        />
+      </div>
     </div>
   );
 }
