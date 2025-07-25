@@ -850,6 +850,180 @@
   gap: 1.5rem;
 }
 
+/* src/styles/components/DirigenteDashboard.module.css */
+
+/* ... tus estilos existentes ... */
+
+/* --- ESTILOS PARA EL MÓDULO DE EXPEDIENTES --- */
+.expedientesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expedienteItem {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.expedienteHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.expedienteHeader:hover {
+  background-color: #f8f9fa;
+}
+
+.expedienteChevronCerrado,
+.expedienteChevronAbierto {
+  transition: transform 0.3s ease;
+}
+.expedienteChevronAbierto {
+  transform: rotate(180deg);
+}
+
+.expedienteDetalle {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  border-top: 1px solid #e0e0e0;
+  animation: fadeIn 0.5s ease;
+  line-height: 1.6;
+}
+.expedienteDetalle p {
+  margin-bottom: 0.5rem;
+}
+
+.transicionActiva,
+.transicionInactiva {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left-width: 5px;
+  border-left-style: solid;
+}
+.transicionActiva {
+  background-color: #fff8e1;
+  border-left-color: #ffc107;
+}
+.transicionInactiva {
+  background-color: #f1f8e9;
+  border-left-color: #8bc34a;
+}
+
+/* En DirigenteDashboard.module.css, al final del archivo */
+
+.expedienteGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.expedienteColumna h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.avanceAreaItem {
+  margin-bottom: 0.75rem;
+}
+.avanceAreaItem label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* Reutilizamos el estilo de la barra de progreso de los reportes */
+.percentageBar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.barFill {
+  height: 20px;
+  background-color: var(--color-tropa);
+  border-radius: 4px;
+  text-align: right;
+  padding: 0 8px;
+  color: white;
+  font-size: 0.8rem;
+  line-height: 20px;
+  white-space: nowrap;
+  transition: width 0.5s ease-in-out;
+}
+
+/* En DirigenteDashboard.module.css, al final */
+
+/* Haz que el contenedor del área de avance sea clickeable */
+.avanceAreaItem {
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.avanceAreaItem:hover {
+  background-color: #f0f8ff; /* Un azul muy claro al pasar el mouse */
+}
+
+/* Contenedor para la lista de pasos */
+.pasosDetalleContainer {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e0e0e0;
+  animation: fadeIn 0.4s;
+}
+
+/* Estilos para cada paso individual */
+.pasoCompletado,
+.pasoPendiente {
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.pasoCompletado {
+  background-color: #f1f8e9; /* Verde claro */
+}
+.pasoPendiente {
+  background-color: #fbe9e7; /* Rojo/naranja muy claro */
+}
+
+.pasoCompletado p,
+.pasoPendiente p {
+  margin: 0;
+}
+
+/* Estilo para el texto/relato del protagonista */
+.pasoTexto {
+  font-size: 0.85rem;
+  color: #555;
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+  border-top: 1px dashed #ccc;
+}
+
+/* Media query para hacer el grid de una columna en móvil */
+@media (max-width: 992px) {
+  .expedienteGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .banderinCard {

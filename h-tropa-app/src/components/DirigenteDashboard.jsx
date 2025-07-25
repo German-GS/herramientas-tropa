@@ -6,6 +6,7 @@ import styles from "../styles/components/DirigenteDashboard.module.css";
 import GestionPatrullas from "./GestionPatrullas";
 import RegistroJuegos from "./RegistroJuegos";
 import AsistenciaInspeccion from "./AsistenciaInspeccion";
+import ExpedientesView from "./ExpedientesView";
 import ReportesView from "./ReportesView";
 import logoTropa from "../img/TROPA-ÍCONO-4.png";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -38,10 +39,14 @@ export default function DirigenteDashboard({ userProfile }) {
         return "Asistencia e Inspección";
       case "reportes":
         return "Reportes y Puntajes";
+      case "expedientes":
+        return "Expedientes de Protagonistas";
       default:
         return "";
     }
   };
+
+  // En DirigenteDashboard.jsx
 
   const renderContent = () => {
     switch (activeTab) {
@@ -53,6 +58,8 @@ export default function DirigenteDashboard({ userProfile }) {
         return <RegistroJuegos />;
       case "reportes":
         return <ReportesView />;
+      case "expedientes":
+        return <ExpedientesView />;
       default:
         return <GestionPatrullas />;
     }
@@ -121,6 +128,14 @@ export default function DirigenteDashboard({ userProfile }) {
           >
             Reportes
           </button>
+          <button
+            className={`${styles.navBtn} ${
+              activeTab === "expedientes" ? styles.active : ""
+            }`}
+            onClick={() => handleNavClick("expedientes")}
+          >
+            Expedientes
+          </button>
         </nav>
       )}
 
@@ -175,6 +190,12 @@ export default function DirigenteDashboard({ userProfile }) {
               onClick={() => handleNavClick("reportes")}
             >
               Reportes
+            </button>
+            <button
+              className={styles.mobileNavLink}
+              onClick={() => handleNavClick("expedientes")}
+            >
+              Expedientes
             </button>
           </nav>
         </div>
